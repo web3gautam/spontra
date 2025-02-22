@@ -61,5 +61,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            target/release/solochain-template-node
-            target/release/wbuild/solochain-template-runtime/solochain_template_runtime.compact.compressed.wasm
+            target/release/spontra-node
+            target/release/wbuild/spontra-runtime/spontra_runtime.compact.compressed.wasm
