@@ -70,7 +70,7 @@ where
 
 	fn can_withdraw_fee(
 		who: &T::AccountId,
-		_call: &T::RuntimeCall,
+		call: &T::RuntimeCall,
 		_dispatch_info: &DispatchInfoOf<T::RuntimeCall>,
 		fee: Self::Balance,
 		_tip: Self::Balance,
@@ -79,7 +79,18 @@ where
 			return Ok(())
 		}
 
-		match F::can_withdraw(who, fee) {
+		let mut who_pays: T::AccountId = who.clone();
+
+		if S::is_call_sponsored(call) {
+			if let Some(payer) = S::get_payer() {
+				who_pays = payer;
+			} else {
+				// Call is sponsored but no payer found -> Error
+				return Err(InvalidTransaction::Payment.into())
+			}
+		}
+
+		match F::can_withdraw(&who_pays, fee) {
 			WithdrawConsequence::Success => Ok(()),
 			_ => Err(InvalidTransaction::Payment.into()),
 		}
@@ -93,26 +104,32 @@ where
 		tip: Self::Balance,
 		already_withdrawn: Self::LiquidityInfo,
 	) -> Result<(), TransactionValidityError> {
-		if let Some(paid) = already_withdrawn {
-			// Calculate how much refund we should return
-			let refund_amount = paid.peek().saturating_sub(corrected_fee);
-			// refund to the the account that paid the fees if it exists. otherwise, don't refind
-			// anything.
-			let refund_imbalance = if F::total_balance(who) > F::Balance::zero() {
-				F::deposit(who, refund_amount, Precision::BestEffort)
-					.unwrap_or_else(|_| Debt::<T::AccountId, F>::zero())
-			} else {
-				Debt::<T::AccountId, F>::zero()
-			};
-			// merge the imbalance caused by paying the fees and refunding parts of it again.
-			let adjusted_paid: Credit<T::AccountId, F> = paid
-				.offset(refund_imbalance)
-				.same()
-				.map_err(|_| TransactionValidityError::Invalid(InvalidTransaction::Payment))?;
-			// Call someone else to handle the imbalance (fee and tip separately)
-			let (tip, fee) = adjusted_paid.split(tip);
-			OU::on_unbalanceds(Some(fee).into_iter().chain(Some(tip)));
-		}
+		// TODO: Make this work with sponsored transactions.
+		// The transaction extension keeps track of who paid the fee.
+		// We need to let the transaction extension know about the payer.
+		// Or maybe move the whole check for sponsored call in the extension.
+
+
+		// if let Some(paid) = already_withdrawn {
+		// 	// Calculate how much refund we should return
+		// 	let refund_amount = paid.peek().saturating_sub(corrected_fee);
+		// 	// refund to the the account that paid the fees if it exists. otherwise, don't refind
+		// 	// anything.
+		// 	let refund_imbalance = if F::total_balance(who) > F::Balance::zero() {
+		// 		F::deposit(who, refund_amount, Precision::BestEffort)
+		// 			.unwrap_or_else(|_| Debt::<T::AccountId, F>::zero())
+		// 	} else {
+		// 		Debt::<T::AccountId, F>::zero()
+		// 	};
+		// 	// merge the imbalance caused by paying the fees and refunding parts of it again.
+		// 	let adjusted_paid: Credit<T::AccountId, F> = paid
+		// 		.offset(refund_imbalance)
+		// 		.same()
+		// 		.map_err(|_| TransactionValidityError::Invalid(InvalidTransaction::Payment))?;
+		// 	// Call someone else to handle the imbalance (fee and tip separately)
+		// 	let (tip, fee) = adjusted_paid.split(tip);
+		// 	OU::on_unbalanceds(Some(fee).into_iter().chain(Some(tip)));
+		// }
 
 		Ok(())
 	}
