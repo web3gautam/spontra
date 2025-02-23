@@ -9,6 +9,7 @@ edition = "2021"
 members = [
     "node",
     "pallets/template",
+    "pallets/spontra",
     "runtime",
 ]
 resolver = "2"
@@ -16,6 +17,7 @@ resolver = "2"
 [workspace.dependencies]
 spontra-runtime = { path = "./runtime", default-features = false }
 pallet-template = { path = "./pallets/template", default-features = false }
+pallet-spontra = { path = "./pallets/spontra", default-features = false }
 clap = { version = "4.5.13" }
 frame-benchmarking-cli = { version = "46.0.0", default-features = false }
 frame-metadata-hash-extension = { version = "0.7.0", default-features = false }
@@ -47,6 +49,7 @@ sp-core = { version = "35.0.0", default-features = false }
 sp-genesis-builder = { version = "0.16.0", default-features = false }
 sp-inherents = { version = "35.0.0", default-features = false }
 sp-io = { version = "39.0.0", default-features = false }
+sp-std = { version = "14.0.0", default-features = false }
 sp-keyring = { version = "40.0.0", default-features = false }
 sp-runtime = { version = "40.1.0", default-features = false }
 sp-timestamp = { version = "35.0.0", default-features = false }
@@ -72,3 +75,5 @@ sp-storage = { version = "22.0.0", default-features = false }
 sp-transaction-pool = { version = "35.0.0", default-features = false }
 sp-version = { version = "38.0.0", default-features = false }
 substrate-wasm-builder = { version = "25.0.0", default-features = false }
+hex = { version = "0.4", default-features = false }
+hex-literal = { version ="0.4.1", default-features = false }

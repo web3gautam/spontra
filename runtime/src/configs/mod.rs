@@ -37,6 +37,7 @@ use pallet_transaction_payment::{ConstFeeMultiplier, FungibleAdapter, Multiplier
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_runtime::{traits::One, Perbill};
 use sp_version::RuntimeVersion;
+use pallet_spontra::payment::SponsoredFungibleAdapter;
 
 // Local module imports
 use super::{
@@ -143,7 +144,7 @@ parameter_types! {
 
 impl pallet_transaction_payment::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type OnChargeTransaction = FungibleAdapter<Balances, ()>;
+	type OnChargeTransaction = SponsoredFungibleAdapter<Balances, (), pallet_spontra::Pallet<Runtime>>;
 	type OperationalFeeMultiplier = ConstU8<5>;
 	type WeightToFee = IdentityFee<Balance>;
 	type LengthToFee = IdentityFee<Balance>;
@@ -161,4 +162,9 @@ impl pallet_sudo::Config for Runtime {
 impl pallet_template::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type WeightInfo = pallet_template::weights::SubstrateWeight<Runtime>;
+}
+
+impl pallet_spontra::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type MaxNameLen = ConstU32<256>;
 }
