@@ -1,6 +1,6 @@
 # Sponsored Transactions for Polkadot SDK
 
-Small proof-of-concept for sponsored transactions in Substrate. Similar to how the `sudo` key is set in a Substrate chain, you can set a `payer` key using the Spontra pallet. You can then sponsor specific transactions using the `sponsor_call` extrinsic. Once a call is marked as sponsored, the payer pays for that call.
+Small proof-of-concept for sponsored transactions in Polkadot SDK. Similar to how the `sudo` key is set in a Substrate chain, you can set a `payer` key using the Spontra pallet. You can then sponsor specific transactions using the `sponsor_call` extrinsic. Once a call is marked as sponsored, the payer pays for that call.
 
 Note: This solution is **not analyzed for security best practices**. Don't use it in production without a thorough audit.
 
@@ -12,23 +12,6 @@ Use the following command to build the node without launching it:
 
 ```sh
 cargo build --release
-```
-
-### Embedded Docs
-
-After you build the project, you can use the following command to explore its
-parameters and subcommands:
-
-```sh
-./target/release/spontra-node -h
-```
-
-You can generate and view the [Rust
-Docs](https://doc.rust-lang.org/cargo/commands/cargo-doc.html) for this template
-with this command:
-
-```sh
-cargo +nightly doc --open
 ```
 
 ### Local Development Chain
@@ -60,7 +43,6 @@ Development chains:
 - Are preconfigured with a genesis state (`/node/src/chain_spec.rs`) that
   includes several pre-funded development accounts.
 
-
 To persist chain state between runs, specify a base path by running a command
 similar to the following:
 
@@ -79,3 +61,20 @@ dev
 $ ls ./my-chain-state/chains/dev
 db keystore network
 ```
+
+### Test Data
+
+The Sponsor Call extrinsic takes pallet name and call name as hex. Use the following test data:
+
+Template: `0x54656d706c617465`
+
+do_something: `0x646f5f736f6d657468696e67`
+
+Balances: `0x42616c616e636573`
+
+transfer_keep_alive: `0x7472616e736665725f6b6565705f616c697665`
+
+## License
+
+The code within this repository is licensed under Apache-2.0 license. See the [LICENSE](./LICENSE) file for more
+details.
